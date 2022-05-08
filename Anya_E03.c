@@ -12,6 +12,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <math.h>
+#include <ctype.h>
 #define SEGMENT 1024 
 
 static const char *WibuLogPath = "/home/soreta/Documents/Wibu.log";
@@ -213,6 +214,88 @@ void renameExt(char fileName[]){
   strcat(newSpecial,stringFromInt);
 }
 //---------------------------------------------------------//
+//------------------------soal 2---------------------------//
+void find_dir (char* path) { 
+      DIR *dp; 
+      struct dirent *ep; 
+      dp = opendir(path); 
+      if (dp != NULL) { 
+          while ((ep = readdir (dp))) { puts (ep->d_name);} 
+          (void) closedir (dp); 
+      } 
+      else perror ("Couldn't open the directory"); 
+}
+//C[i] = (p[i] + k[i mod klength] ) mod N, C = cipher, k = secret key (word), p = sentence or plainText or word, N = number of letters in the alphabet
+void vigenereCipher(char* plainText){
+    char* k = "INNUGANTENG";
+	char plainText[256];
+	int i;
+	char cipher;
+	int cipherValue;
+	int len = strlen(k);
+	
+	//Loop through the length of the plain text string
+	for(i=0; i<strlen(plainText); i++){
+		
+		//if the character is lowercase, where range is [97 -122]
+		if(islower(plainText[i]))
+		{
+			cipherValue = ( (int)plainText[i]-97 + (int)tolower(k[i % len])-97 ) % 26 +97;
+			cipher = (char)cipherValue;
+		}
+		else // Else it's upper case, where letter range is [65 - 90]
+		{
+			cipherValue = ( (int)plainText[i]-65 + (int)toupper(k[i % len])-65 ) % 26 +65;
+			cipher = (char)cipherValue;
+		}
+		
+		//Print the ciphered character if it is alphanumeric (a letter)
+		if(isalpha(plainText[i]))
+		{
+			printf("%c", cipher);
+		}
+		else //if the character is not a letter then print the character (e.g. space)
+		{
+			printf("%c", plainText[i]);
+		}
+	}
+}
+void create_txt(char* filename){
+FILE *fptr;
+fptr = fopen(directory, "r");
+if (filename[0] == 'I' && filename[1] == 'A' && filename[2] == 'N' && filename[3] == '_') {
+        char* temp;
+        strcpy(temp,filename);
+        vigenereChiper(temp);
+        DIR *dp; 
+      struct dirent *ep; 
+      dp = opendir(path); 
+      if (dp != NULL) { 
+          while ((ep = readdir (dp))) { puts (ep->d_name);} 
+          (void) closedir (dp); 
+      } 
+      else perror ("Couldn't open the directory"); 
+}
+}
+
+       fclose(fptr);
+       }
+
+int rename(const char * oldname, const char * newname);
+
+void rename_encode(char* old, char* new) {
+      char* temp1 = "modul4/";
+      char* temp2 = "modul4/";
+      strcpy(temp1,old);
+      strcpy(temp2, new);
+      int rename(old, new);
+      if (rename == 0 && old[0] == 'I' && old[1] == 'A' && old[2] == 'N') {
+          // Encode Directory
+          vigenereChiper(old);
+
+}
+
+//soal 2
 //Get file attributes
 static  int  xmp_getattr(const char *path, struct stat *stbuf){
 	char * strToEnc1 = strstr(path, prefix);
