@@ -9,6 +9,9 @@
 #include <sys/time.h>
 #include <sys/wait.h>
 #include <errno.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <math.h>
 #define SEGMENT 1024 
 
 static const char *WibuLogPath = "/home/soreta/Documents/Wibu.log";
@@ -36,7 +39,7 @@ char rot (char alphabet){
     for(int i = 0 ; i < 26 ; i++) if (alphabet == alphabetlow[i]) return rot13[i];    
     return '.';
 }
-void encode1(char* strEnc1,const char *path) { 
+void encode1(char* strEnc1,const char *path) { //encrypt ANimeku
 	char oldPath[SEGMENT];
 	char newPath[SEGMENT];
 	strcpy(oldPath,"");
@@ -68,7 +71,7 @@ void encode1(char* strEnc1,const char *path) {
 	logging1("terenkripsi",oldPath, newPath);
 }
 
-void decode1(char * strDec1,const char *path){ //decrypt encv1_
+void decode1(char * strDec1,const char *path){ //decrypt Animeku_
 	char oldPath[SEGMENT];
 	char newPath[SEGMENT];
 	strcpy(oldPath,"");
@@ -110,6 +113,106 @@ void decode1(char * strDec1,const char *path){ //decrypt encv1_
 	strcat(newPath,strDec1);
 	logging1("terdecode",oldPath, newPath);
 }
+
+// --------soal no 3------------
+// nama setelah uppercase + tambah extension biner
+char newSpecial[1024];
+// string hasil fungsi toString
+char stringFromInt[1024];
+
+// fungsi int->string
+void toString(int x){
+	int len = 0;
+	len++;
+	int temp = x;
+	while(temp>10){
+	    temp /= 10;
+	    len++;
+	}
+	temp = len;
+	// fodder
+	for(int i=0; i<len; i++)stringFromInt[i] = 'a';
+	while(temp--){
+	    if(x)stringFromInt[temp] = '0' + (x%10);
+	    else stringFromInt[temp] = '0' + x;
+	    x/=10;
+	}
+	stringFromInt[len] = '\0';
+}
+
+// cek file diawali "nam_do-saq_"
+bool checkSp(char fileName[]){
+  int fileNameLen = strlen(fileName);
+  if(fileNameLen >= 11){
+    char checkNDS[1024];
+    for(int i = 0; i < 11; i++)checkNDS[i] = fileName[i];
+    checkNDS[11] = '\0';
+    if(strcmp(checkNDS, "nam_do-saq_")==0)return true;
+  }
+  return false;
+}
+double pow (double x, double y){
+	double ret = 1;
+	for(int i = 0 ; i < y ; i++) ret *= x;
+	return ret;
+}
+// ganti nama dir spesial (uppercase + tambah extension biner)
+void renameExt(char fileName[]){
+  // find extension
+  int lastDot = -1;
+  for(int i = 0; i < strlen(fileName); i++)if(fileName[i] == '.')lastDot = i;
+  
+  char noExt[1024], theExt[1024];
+  strcpy(newSpecial,"");
+  strcpy(noExt,"");
+  strcpy(theExt,"");
+  
+  // no extension
+  if(lastDot == -1)lastDot = strlen(fileName);
+  
+  // split
+  for(int i = 0; i < lastDot; i++)noExt[i] = fileName[i];
+  noExt[lastDot] = '\0';
+  
+  if(lastDot != strlen(fileName)){
+    int ctr = 0;
+    for(int i = lastDot; i < strlen(fileName); i++){
+      theExt[ctr] = fileName[i];
+      ctr++;
+    }
+    theExt[ctr]='\0';
+  }
+  
+  char upperCased[1024];
+  strcpy(upperCased,"");
+  
+  for(int i = 0; i < strlen(noExt); i++){
+    if(noExt[i] >= 'a' && noExt[i] <= 'z') {
+         upperCased[i] = noExt[i] -32;
+    }
+    else upperCased[i] = noExt[i];
+  }
+  upperCased[strlen(noExt)] = '\0';
+  
+  int diff = 0, multi = 0;
+  
+  for(int i = strlen(upperCased)-1; i >= 0; i--){
+    if(noExt[i]!=upperCased[i])diff += pow(2, multi);
+    multi++;
+  }
+  
+  toString(diff);
+  
+  char dotz[2];
+  dotz[0]='.';
+  dotz[1]='\0';
+  
+  strcpy(newSpecial,upperCased);
+  strcat(newSpecial,theExt);
+  strcat(newSpecial,dotz);
+  strcat(newSpecial,stringFromInt);
+}
+//---------------------------------------------------------//
 //Get file attributes
 static  int  xmp_getattr(const char *path, struct stat *stbuf){
 	char * strToEnc1 = strstr(path, prefix);
