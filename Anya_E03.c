@@ -8,6 +8,7 @@
 #include <errno.h>
 #include <sys/time.h>
 #include <sys/wait.h>
+#include <errno.h>
 #define SEGMENT 1024 
 
 static const char *WibuLogPath = "/home/soreta/Documents/Wibu.log";
@@ -17,7 +18,8 @@ char prefix[8] = "Animeku_";
 void logging1(const char* kind, const char* old, char* new) {
 	
 	FILE * logFile = fopen(WibuLogPath, "a");
-    fprintf(logFile, "RENAME %s %s --> %s\n",kind, old, new);
+	if (logFile == NULL) printf("Error : errno = '%s'.\n",strerror(errno));
+	else fprintf(logFile, "RENAME %s %s --> %s\n",kind, old, new);
     fclose(logFile);
 }
 
@@ -34,7 +36,14 @@ char rot (char alphabet){
     for(int i = 0 ; i < 26 ; i++) if (alphabet == alphabetlow[i]) return rot13[i];    
     return '.';
 }
-void encode1(char* strEnc1) { 
+void encode1(char* strEnc1,const char *path) { 
+	char oldPath[SEGMENT];
+	char newPath[SEGMENT];
+	strcpy(oldPath,"");
+	strcpy(newPath,"");
+	strcpy(oldPath,path);
+	strcat(oldPath,"/");
+	strcat(oldPath,strEnc1);
 	if(strcmp(strEnc1, ".") == 0 || strcmp(strEnc1, "..") == 0)
         return;
     int strLength = strlen(strEnc1);
@@ -53,9 +62,20 @@ void encode1(char* strEnc1) {
         if(strEnc1[i]>='a'&&strEnc1[i]<='z')
             strEnc1[i] = 'a'+ (strEnc1[i] - 'a' + 13) %26 ;
     }
+	strcpy(newPath,path);
+	strcat(newPath,"/");
+	strcat(newPath,strEnc1);
+	logging1("terenkripsi",oldPath, newPath);
 }
 
-void decode1(char * strDec1){ //decrypt encv1_
+void decode1(char * strDec1,const char *path){ //decrypt encv1_
+	char oldPath[SEGMENT];
+	char newPath[SEGMENT];
+	strcpy(oldPath,"");
+	strcpy(newPath,"");
+	strcpy(oldPath,path);
+	strcat(oldPath,"/");
+	strcat(oldPath,strDec1);
 	if(strcmp(strDec1, ".") == 0 || strcmp(strDec1, "..") == 0 || strstr(strDec1, "/") == NULL) 
         return;
     
@@ -85,13 +105,17 @@ void decode1(char * strDec1){ //decrypt encv1_
             strDec1[i] = 'a' + (strDec1[i] - 'a' + 13) % 26 ;
         }
 	}
+	strcpy(newPath,path);
+	strcat(newPath,"/");
+	strcat(newPath,strDec1);
+	logging1("terdecode",oldPath, newPath);
 }
 //Get file attributes
 static  int  xmp_getattr(const char *path, struct stat *stbuf){
 	char * strToEnc1 = strstr(path, prefix);
 	
 	if(strToEnc1 != NULL){
-		decode1(strToEnc1);
+		decode1(strToEnc1,path);
     }
 
 	char newPath[1000];
@@ -107,7 +131,7 @@ static int xmp_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_
 	char * strToEnc1 = strstr(path, prefix);
     
 	if(strToEnc1 != NULL) {
-        decode1(strToEnc1);
+        decode1(strToEnc1,path);
     }
 
 	char newPath[1000];
@@ -133,7 +157,7 @@ static int xmp_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_
 		st.st_mode = dir->d_type << 12;
 		if(strToEnc1 != NULL){
 			//encode yang ada di dalam directory sekarang
-			encode1(dir->d_name); 
+			encode1(dir->d_name,path); 
         }
 		
 		result = (filler(buf, dir->d_name, &st, 0));
@@ -209,7 +233,7 @@ static int xmp_unlink(const char *path) {
 	char * strToEnc1 = strstr(path, prefix);
 	
 	if(strToEnc1 != NULL){
-        decode1(strToEnc1); //buat ngebalikin biar bisa dibaca di document
+        decode1(strToEnc1,path); //buat ngebalikin biar bisa dibaca di document
     }
 
 	char newPath[1000];
@@ -240,7 +264,7 @@ static int xmp_unlink(const char *path) {
 static int xmp_rmdir(const char *path) {
 	char * strToEnc1 = strstr(path, prefix);
 	if(strToEnc1 != NULL){
-        decode1(strToEnc1); //buat ngebalikin biar bisa dibaca di document
+        decode1(strToEnc1,path); //buat ngebalikin biar bisa dibaca di document
     }
 	
 	char newPath[1000];
