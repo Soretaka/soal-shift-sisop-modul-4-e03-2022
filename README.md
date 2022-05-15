@@ -220,7 +220,7 @@ fungsi tersebut diletakan pada fungsi encode dan decode untuk mencatat setiap ka
 #### screenshot
 soal 1a,1b,1d, dan 1e
 
-![Fuse Berjalan](https://imgur.com/a/IUlKpEA.jpg)
+![Fuse Berjalan](/uploads/-/system/user/10956064/a876dcad05fe88cefa13af4ebd047464/Screenshot_from_2022-05-15_17-04-19.png)
 
 Fuse berjalan
 
