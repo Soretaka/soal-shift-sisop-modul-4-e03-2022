@@ -542,3 +542,5 @@ void decodeExt(const char *path, char *res){
 }
 ```
 Penyelesaian 3E dilakukan dengan cara membuat fungsi encode yaitu renameExt yang akan mengembalikan hasil nama file yang telah terenkripsi dengan format uppercase dan perbedaan biner sebagai ekstensi di belakang, sedangkan fungsi decodeExt digunakan mengembalikan hasil enkripsi sehingga file dapat dideteksi oleh sistem
+### Dokumentasi
+![Encode Decode](https://i.snipboard.io/I7NhqJ.jpg)
