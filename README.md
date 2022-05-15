@@ -220,20 +220,20 @@ fungsi tersebut diletakan pada fungsi encode dan decode untuk mencatat setiap ka
 #### screenshot
 soal 1a,1b,1d, dan 1e
 
-![Fuse Berjalan](https://imgur.com/a/IUlKpEA)
+![Fuse Berjalan](https://imgur.com/a/IUlKpEA.jpg)
 
 Fuse berjalan
 
-![Encode sesuai soal](https://imgur.com/a/JTtdqJ9)
+![Encode sesuai soal](https://imgur.com/a/JTtdqJ9.jpg)
 
 Encode sesuai soal
 
-![Ketika file direname, maka terdecode otomatis](https://imgur.com/a/PG7QeYf)
+![Ketika file direname, maka terdecode otomatis](https://imgur.com/a/PG7QeYf.jpg)
 
 Ketika file direname, maka terdecode otomatis
 
 soal 1d
 
-![hasil log](https://imgur.com/a/JCLBPJc)
+![hasil log](https://imgur.com/a/JCLBPJc.jpg)
 
 hasil log
