@@ -15,10 +15,9 @@
 #include <ctype.h>
 #define SEGMENT 1024 
 
-static const char *WibuLogPath = "/home/soreta/Documents/Wibu.log";
-static const char *directoryPath = "/home/soreta/Downloads";
+static const char *WibuLogPath = "/home/kali/Documents/Wibu.log";
+static const char *directoryPath = "/home/kali/Downloads";
 char prefix[8] = "Animeku_";
-//char prefixSp[11] = "nam_do_saq_";
 
 void logging1(const char* kind, const char* old, char* new) {
 	
@@ -382,7 +381,7 @@ static  int  xmp_getattr(const char *path, struct stat *stbuf){
 //Read directory
 static int xmp_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset, struct fuse_file_info *fi){ 
 	char * strToEnc1 = strstr(path, prefix);
-    
+    	char * strToEnc3 = strstr(path, "nam_do-saq");
 	if(strToEnc1 != NULL) {
         decode1(strToEnc1,path);
     }
@@ -411,6 +410,9 @@ static int xmp_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_
 		if(strToEnc1 != NULL){
 			//encode yang ada di dalam directory sekarang
 			encode1(dir->d_name,path); 
+        }if(strToEnc3 != NULL){
+			//encode yang ada di dalam directory sekarang
+			decodeExt(path,dir->d_name); 
         }
 		
 		result = (filler(buf, dir->d_name, &st, 0));
