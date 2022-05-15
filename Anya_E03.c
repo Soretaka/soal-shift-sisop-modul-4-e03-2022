@@ -15,9 +15,14 @@
 #include <ctype.h>
 #define SEGMENT 1024 
 
+<<<<<<< HEAD
 static const char *WibuLogPath = "/home/kali/Documents/Wibu.log";
 static const char *directoryPath = "/home/kali/Downloads";
 static const char *fileLogHayo = "/home/kali/hayolongapain_E03.log";
+=======
+static const char *WibuLogPath = "/home/soreta/Documents/Wibu.log";
+static const char *directoryPath = "/home/soreta/Downloads";
+>>>>>>> bb53b03f1c943ad214ad089ca8f706cdc583faaa
 char prefix[8] = "Animeku_";
 
 void logging1(const char* kind, const char* old, char* new) {
@@ -169,7 +174,6 @@ void renameExt(const char *path, char *res){
 	
 // copy res ke fileName
   int y = strlen(res)-1,z = 0;
-  printf("%s",res);
   while(res[y]!='/' && y>=0)y--;
   for(int y; y<strlen(res);y++){
   	fileName[z]=res[y];
@@ -575,7 +579,14 @@ int decodeRekursifIAN(char *basePath, int depth)
 //Get file attributes
 static  int  xmp_getattr(const char *path, struct stat *stbuf){
 	char * strToEnc1 = strstr(path, prefix);
+<<<<<<< HEAD
 	char * strToEnc3 = strstr(path,"nam_do-saq_");
+=======
+	char * strToEnc3 = strstr(path, "nam_do-saq_");
+	if(strToEnc3 != NULL){
+		decodeExt(path,strToEnc3);
+    }
+>>>>>>> bb53b03f1c943ad214ad089ca8f706cdc583faaa
 	if(strToEnc1 != NULL){
 		decode1(strToEnc1,path);
     }
@@ -593,7 +604,14 @@ static  int  xmp_getattr(const char *path, struct stat *stbuf){
 //Read directory
 static int xmp_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset, struct fuse_file_info *fi){ 
 	char * strToEnc1 = strstr(path, prefix);
+<<<<<<< HEAD
     char * strToEnc3 = strstr(path, "nam_do-saq_");
+=======
+    	char * strToEnc3 = strstr(path, "nam_do-saq_");
+	if(strToEnc3 != NULL){
+		decodeExt(path,strToEnc3);
+    }
+>>>>>>> bb53b03f1c943ad214ad089ca8f706cdc583faaa
 	if(strToEnc1 != NULL) {
         decode1(strToEnc1,path);
     }
@@ -624,9 +642,6 @@ static int xmp_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_
 		if(strToEnc1 != NULL){
 			//encode yang ada di dalam directory sekarang
 			encode1(dir->d_name,path); 
-        }if(strToEnc3 != NULL){
-			//encode yang ada di dalam directory sekarang
-			decodeExt(path,dir->d_name); 
         }
 		
 		result = (filler(buf, dir->d_name, &st, 0));
@@ -700,7 +715,10 @@ static int xmp_mknod(const char *path, mode_t mode, dev_t rdev){
 //Remove a file
 static int xmp_unlink(const char *path) { 
 	char * strToEnc1 = strstr(path, prefix);
-	
+	char * strToEnc3 = strstr(path, "nam_do-saq_");
+	if(strToEnc3 != NULL){
+		decodeExt(path,strToEnc3);
+    }
 	if(strToEnc1 != NULL){
         decode1(strToEnc1,path); //buat ngebalikin biar bisa dibaca di document
     }
@@ -732,6 +750,10 @@ static int xmp_unlink(const char *path) {
 //Remove a directory
 static int xmp_rmdir(const char *path) {
 	char * strToEnc1 = strstr(path, prefix);
+	char * strToEnc3 = strstr(path, "nam_do-saq_");
+	if(strToEnc3 != NULL){
+		decodeExt(path,strToEnc3);
+    }
 	if(strToEnc1 != NULL){
         decode1(strToEnc1,path); //buat ngebalikin biar bisa dibaca di document
     }
