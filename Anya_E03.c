@@ -15,8 +15,8 @@
 #include <ctype.h>
 #define SEGMENT 1024 
 
-static const char *WibuLogPath = "/home/kali/Documents/Wibu.log";
-static const char *directoryPath = "/home/kali/Downloads";
+static const char *WibuLogPath = "/home/soreta/Documents/Wibu.log";
+static const char *directoryPath = "/home/soreta/Downloads";
 char prefix[8] = "Animeku_";
 
 void logging1(const char* kind, const char* old, char* new) {
@@ -365,7 +365,10 @@ void decodeExt(const char *path, char *res){
 //Get file attributes
 static  int  xmp_getattr(const char *path, struct stat *stbuf){
 	char * strToEnc1 = strstr(path, prefix);
-	
+	char * strToEnc3 = strstr(path, "nam_do-saq_");
+	if(strToEnc3 != NULL){
+		decodeExt(path,strToEnc3);
+    }
 	if(strToEnc1 != NULL){
 		decode1(strToEnc1,path);
     }
@@ -381,7 +384,10 @@ static  int  xmp_getattr(const char *path, struct stat *stbuf){
 //Read directory
 static int xmp_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset, struct fuse_file_info *fi){ 
 	char * strToEnc1 = strstr(path, prefix);
-    	char * strToEnc3 = strstr(path, "nam_do-saq");
+    	char * strToEnc3 = strstr(path, "nam_do-saq_");
+	if(strToEnc3 != NULL){
+		decodeExt(path,strToEnc3);
+    }
 	if(strToEnc1 != NULL) {
         decode1(strToEnc1,path);
     }
@@ -410,9 +416,6 @@ static int xmp_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_
 		if(strToEnc1 != NULL){
 			//encode yang ada di dalam directory sekarang
 			encode1(dir->d_name,path); 
-        }if(strToEnc3 != NULL){
-			//encode yang ada di dalam directory sekarang
-			decodeExt(path,dir->d_name); 
         }
 		
 		result = (filler(buf, dir->d_name, &st, 0));
@@ -486,7 +489,10 @@ static int xmp_mknod(const char *path, mode_t mode, dev_t rdev){
 //Remove a file
 static int xmp_unlink(const char *path) { 
 	char * strToEnc1 = strstr(path, prefix);
-	
+	char * strToEnc3 = strstr(path, "nam_do-saq_");
+	if(strToEnc3 != NULL){
+		decodeExt(path,strToEnc3);
+    }
 	if(strToEnc1 != NULL){
         decode1(strToEnc1,path); //buat ngebalikin biar bisa dibaca di document
     }
@@ -518,6 +524,10 @@ static int xmp_unlink(const char *path) {
 //Remove a directory
 static int xmp_rmdir(const char *path) {
 	char * strToEnc1 = strstr(path, prefix);
+	char * strToEnc3 = strstr(path, "nam_do-saq_");
+	if(strToEnc3 != NULL){
+		decodeExt(path,strToEnc3);
+    }
 	if(strToEnc1 != NULL){
         decode1(strToEnc1,path); //buat ngebalikin biar bisa dibaca di document
     }
