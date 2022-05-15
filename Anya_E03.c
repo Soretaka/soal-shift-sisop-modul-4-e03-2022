@@ -15,14 +15,10 @@
 #include <ctype.h>
 #define SEGMENT 1024 
 
-<<<<<<< HEAD
 static const char *WibuLogPath = "/home/kali/Documents/Wibu.log";
 static const char *directoryPath = "/home/kali/Downloads";
 static const char *fileLogHayo = "/home/kali/hayolongapain_E03.log";
-=======
-static const char *WibuLogPath = "/home/soreta/Documents/Wibu.log";
-static const char *directoryPath = "/home/soreta/Downloads";
->>>>>>> bb53b03f1c943ad214ad089ca8f706cdc583faaa
+
 char prefix[8] = "Animeku_";
 
 void logging1(const char* kind, const char* old, char* new) {
@@ -579,14 +575,10 @@ int decodeRekursifIAN(char *basePath, int depth)
 //Get file attributes
 static  int  xmp_getattr(const char *path, struct stat *stbuf){
 	char * strToEnc1 = strstr(path, prefix);
-<<<<<<< HEAD
-	char * strToEnc3 = strstr(path,"nam_do-saq_");
-=======
 	char * strToEnc3 = strstr(path, "nam_do-saq_");
 	if(strToEnc3 != NULL){
 		decodeExt(path,strToEnc3);
     }
->>>>>>> bb53b03f1c943ad214ad089ca8f706cdc583faaa
 	if(strToEnc1 != NULL){
 		decode1(strToEnc1,path);
     }
@@ -604,14 +596,10 @@ static  int  xmp_getattr(const char *path, struct stat *stbuf){
 //Read directory
 static int xmp_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset, struct fuse_file_info *fi){ 
 	char * strToEnc1 = strstr(path, prefix);
-<<<<<<< HEAD
     char * strToEnc3 = strstr(path, "nam_do-saq_");
-=======
-    	char * strToEnc3 = strstr(path, "nam_do-saq_");
 	if(strToEnc3 != NULL){
 		decodeExt(path,strToEnc3);
     }
->>>>>>> bb53b03f1c943ad214ad089ca8f706cdc583faaa
 	if(strToEnc1 != NULL) {
         decode1(strToEnc1,path);
     }
