@@ -18,6 +18,7 @@
 static const char *WibuLogPath = "/home/soreta/Documents/Wibu.log";
 static const char *directoryPath = "/home/soreta/Downloads";
 char prefix[8] = "Animeku_";
+//char prefixSp[11] = "nam_do_saq_";
 
 void logging1(const char* kind, const char* old, char* new) {
 	
@@ -120,7 +121,8 @@ void decode1(char * strDec1,const char *path){ //decrypt Animeku_
 char newSpecial[1024];
 // string hasil fungsi toString
 char stringFromInt[1024];
-
+// nama hasil decode
+char decodedSpecial[1024];
 // fungsi int->string
 void toString(int x){
 	int len = 0;
@@ -142,7 +144,9 @@ void toString(int x){
 }
 
 // cek file diawali "nam_do-saq_"
-bool checkSp(char fileName[]){
+bool checkSp(const char *path){
+  char fileName[1024];
+  strcpy(fileName,path);
   int fileNameLen = strlen(fileName);
   if(fileNameLen >= 11){
     char checkNDS[1024];
@@ -158,7 +162,11 @@ double pow (double x, double y){
 	return ret;
 }
 // ganti nama dir spesial (uppercase + tambah extension biner)
-void renameExt(char fileName[]){
+void renameExt(const char *path, char *res){
+  if(strcmp(res, ".") == 0 || strcmp(res, "..") == 0 || strstr(res, "/") == NULL)return;	
+
+  char fileName[1024];
+  strcpy(fileName,res);
   // find extension
   int lastDot = -1;
   for(int i = 0; i < strlen(fileName); i++)if(fileName[i] == '.')lastDot = i;
@@ -212,90 +220,137 @@ void renameExt(char fileName[]){
   strcat(newSpecial,theExt);
   strcat(newSpecial,dotz);
   strcat(newSpecial,stringFromInt);
+  strcpy(res,newSpecial);
 }
-//---------------------------------------------------------//
-//------------------------soal 2---------------------------//
-void find_dir (char* path) { 
-      DIR *dp; 
-      struct dirent *ep; 
-      dp = opendir(path); 
-      if (dp != NULL) { 
-          while ((ep = readdir (dp))) { puts (ep->d_name);} 
-          (void) closedir (dp); 
-      } 
-      else perror ("Couldn't open the directory"); 
-}
-//C[i] = (p[i] + k[i mod klength] ) mod N, C = cipher, k = secret key (word), p = sentence or plainText or word, N = number of letters in the alphabet
-void vigenereCipher(char* plainText){
-    char* k = "INNUGANTENG";
-	char plainText[256];
-	int i;
-	char cipher;
-	int cipherValue;
-	int len = strlen(k);
+// decode nama dir spesial (uppercase + tambah extension biner ke default)
+void decodeExt(const char *path, char *res){
+  if(strcmp(res, ".") == 0 || strcmp(res, "..") == 0 || strstr(res, "/") == NULL)return;
 	
-	//Loop through the length of the plain text string
-	for(i=0; i<strlen(plainText); i++){
+  char fileName[1024];
+  strcpy(fileName,res);
+	
+  // find decimal ext
+  int lastDot = -1;
+
+  for(int i = 0; i < strlen(fileName); i++)if(fileName[i] == '.')lastDot = i;
+  
+  //get str->decimal
+  int dec = 0;
+  for(int i = lastDot + 1; i<strlen(fileName); i++)dec = dec * 10 + (fileName[i] - '0');
+  
+  printf("this is decimal: %d\n",dec);
+  //get decimal->bin
+  char bintemp[1024], bin[1024];
+  int binIter = 0, iter = 0;
+  while(dec > 0){
+    bintemp[binIter] = '0' + dec%2;
+    dec/=2;
+    binIter++;
+  }
+  bintemp[binIter]='\0';
+  strcpy(bin,bintemp);
+  for(int i = strlen(bintemp)-1; i>=0; i--){
+      bin[iter] = bintemp[i];
+      iter++;
+  }
+  
+  
+  for(int i=0;i<strlen(bin);i++)printf("%c",bin[i]);
+  printf("\n");
+  
+  //decode
+  for(int i = 0; i<strlen(bin); i++){
+    if(bin[i]=='1')decodedSpecial[i] = fileName[i] + 32;
+    else decodedSpecial[i] = fileName[i];
+  } 
+  //copy extension
+  if(strlen(bin))decodedSpecial[strlen(bin)] = '.';
+  for(int i = strlen(bin) + 1; i<lastDot; i++)decodedSpecial[i] = fileName[i];
+  decodedSpecial[lastDot] = '\0';
+}
+// //---------------------------------------------------------//
+// //------------------------soal 2---------------------------//
+// void find_dir (char* path) { 
+//       DIR *dp; 
+//       struct dirent *ep; 
+//       dp = opendir(path); 
+//       if (dp != NULL) { 
+//           while ((ep = readdir (dp))) { puts (ep->d_name);} 
+//           (void) closedir (dp); 
+//       } 
+//       else perror ("Couldn't open the directory"); 
+// }
+// //C[i] = (p[i] + k[i mod klength] ) mod N, C = cipher, k = secret key (word), p = sentence or plainText or word, N = number of letters in the alphabet
+// void vigenereCipher(char* plainText){
+//     char* k = "INNUGANTENG";
+// 	char plainText[256];
+// 	int i;
+// 	char cipher;
+// 	int cipherValue;
+// 	int len = strlen(k);
+	
+// 	//Loop through the length of the plain text string
+// 	for(i=0; i<strlen(plainText); i++){
 		
-		//if the character is lowercase, where range is [97 -122]
-		if(islower(plainText[i]))
-		{
-			cipherValue = ( (int)plainText[i]-97 + (int)tolower(k[i % len])-97 ) % 26 +97;
-			cipher = (char)cipherValue;
-		}
-		else // Else it's upper case, where letter range is [65 - 90]
-		{
-			cipherValue = ( (int)plainText[i]-65 + (int)toupper(k[i % len])-65 ) % 26 +65;
-			cipher = (char)cipherValue;
-		}
+// 		//if the character is lowercase, where range is [97 -122]
+// 		if(islower(plainText[i]))
+// 		{
+// 			cipherValue = ( (int)plainText[i]-97 + (int)tolower(k[i % len])-97 ) % 26 +97;
+// 			cipher = (char)cipherValue;
+// 		}
+// 		else // Else it's upper case, where letter range is [65 - 90]
+// 		{
+// 			cipherValue = ( (int)plainText[i]-65 + (int)toupper(k[i % len])-65 ) % 26 +65;
+// 			cipher = (char)cipherValue;
+// 		}
 		
-		//Print the ciphered character if it is alphanumeric (a letter)
-		if(isalpha(plainText[i]))
-		{
-			printf("%c", cipher);
-		}
-		else //if the character is not a letter then print the character (e.g. space)
-		{
-			printf("%c", plainText[i]);
-		}
-	}
-}
-void create_txt(char* filename){
-FILE *fptr;
-fptr = fopen(directory, "r");
-if (filename[0] == 'I' && filename[1] == 'A' && filename[2] == 'N' && filename[3] == '_') {
-        char* temp;
-        strcpy(temp,filename);
-        vigenereChiper(temp);
-        DIR *dp; 
-      struct dirent *ep; 
-      dp = opendir(path); 
-      if (dp != NULL) { 
-          while ((ep = readdir (dp))) { puts (ep->d_name);} 
-          (void) closedir (dp); 
-      } 
-      else perror ("Couldn't open the directory"); 
-}
-}
+// 		//Print the ciphered character if it is alphanumeric (a letter)
+// 		if(isalpha(plainText[i]))
+// 		{
+// 			printf("%c", cipher);
+// 		}
+// 		else //if the character is not a letter then print the character (e.g. space)
+// 		{
+// 			printf("%c", plainText[i]);
+// 		}
+// 	}
+// }
+// void create_txt(char* filename){
+// FILE *fptr;
+// fptr = fopen(directory, "r");
+// if (filename[0] == 'I' && filename[1] == 'A' && filename[2] == 'N' && filename[3] == '_') {
+//         char* temp;
+//         strcpy(temp,filename);
+//         vigenereChiper(temp);
+//         DIR *dp; 
+//       struct dirent *ep; 
+//       dp = opendir(path); 
+//       if (dp != NULL) { 
+//           while ((ep = readdir (dp))) { puts (ep->d_name);} 
+//           (void) closedir (dp); 
+//       } 
+//       else perror ("Couldn't open the directory"); 
+// }
+// }
 
-       fclose(fptr);
-       }
+//        fclose(fptr);
+//        }
 
-int rename(const char * oldname, const char * newname);
+// int rename(const char * oldname, const char * newname);
 
-void rename_encode(char* old, char* new) {
-      char* temp1 = "modul4/";
-      char* temp2 = "modul4/";
-      strcpy(temp1,old);
-      strcpy(temp2, new);
-      int rename(old, new);
-      if (rename == 0 && old[0] == 'I' && old[1] == 'A' && old[2] == 'N') {
-          // Encode Directory
-          vigenereChiper(old);
+// void rename_encode(char* old, char* new) {
+//       char* temp1 = "modul4/";
+//       char* temp2 = "modul4/";
+//       strcpy(temp1,old);
+//       strcpy(temp2, new);
+//       int rename(old, new);
+//       if (rename == 0 && old[0] == 'I' && old[1] == 'A' && old[2] == 'N') {
+//           // Encode Directory
+//           vigenereChiper(old);
 
-}
+// }
 
-//soal 2
+// //soal 2
 //Get file attributes
 static  int  xmp_getattr(const char *path, struct stat *stbuf){
 	char * strToEnc1 = strstr(path, prefix);
