@@ -237,3 +237,125 @@ soal 1d
 ![hasil log](/uploads/70adc3a045b1e955741591cde0db294b/Screenshot_from_2022-05-15_17-18-33.png)
 
 hasil log
+
+
+# Soal 2
+Saat Anya sedang sibuk mengerjakan programnya, tiba-tiba Innu datang ke rumah Anya untuk mengembalikan barang yang dipinjamnya. Innu adalah programmer jenius sekaligus teman Anya. Ia melihat program yang dibuat oleh Anya dan membantu Anya untuk menambahkan fitur pada programnya dengan ketentuan sebagai berikut :
+
+## 2a
+Jika suatu direktori dibuat dengan awalan “IAN_[nama]”, maka seluruh isi dari direktori tersebut akan terencode dengan algoritma Vigenere Cipher dengan key “INNUGANTENG” (Case-sensitive, Vigenere).
+
+## Penyelesaian 
+Untuk mengklasifikasikan apakah suatu direktori akan diencode atau didecode, kami membuat fungsi isAnimeku yang mengembalikan nilai true atau false. Ketika isAnimeku bernilai true, yaitu ketika terdapat substring "IAN_", maka direktori path yang dimasukkan akan diencode, sebaliknya ketika bernilai false maka akan di-decode.
+Fungsi isIAN:
+```
+bool isIAN(const char *path) 
+{
+    for(int i=0;i<strlen(path)-4+1;i++)
+        if(path[i] == 'I' && path[i+1] == 'A' && path[i+2] == 'N' && path[i+3] == '_') return 1;
+    return 0;
+}
+```
+Fungsi Encode dan Decode  Vigenere Cipher dengan key “INNUGANTENG” (case sensitive)
+```
+void encodeVig(char *s) 
+{
+    char key[] = "INNUGANTENG";
+    for (int i=0;s[i];i++)
+        if('A' <= s[i] && s[i] <= 'Z') s[i] = ((s[i]-'A'+(key[i%((sizeof(key)-1))]-'A'))%26)+'A';
+        else if('a' <= s[i] && s[i] <= 'z') s[i] = ((s[i]-'a'+(key[i%((sizeof(key)-1))]-'A'))%26)+'a';
+}
+
+void decodeVig(char *s) 
+{
+    char key[] = "INNUGANTENG";
+    for(int i=0;s[i];i++)
+        if('A' <= s[i] && s[i] <= 'Z') s[i] = ((s[i]-'A'-(key[i%((sizeof(key)-1))]-'A')+26)%26)+'A';
+        else if ('a' <= s[i] && s[i] <= 'z') s[i] = ((s[i]-'a'-(key[i%((sizeof(key)-1))]-'A')+26)%26)+'a';
+}
+```
+
+## 2b
+Jika suatu direktori di rename dengan “IAN_[nama]”, maka seluruh isi dari direktori tersebut akan terencode seperti pada no. 2a.
+
+## Penyelesaian
+Fungsi fuse untuk xmp_rename akan dipanggil ketika terdapat suatu direktori atau file yang direname. Pada fungsi ini, kita bisa mengecek apakah direktori diubah menjadi direktori yang akan di-encode atau di-decode.
+Oleh karena itu, pada fungsi xmp_rename, kami mendeklarasikan string fpath (nama direktori sebelumnya) dan tpath (nama direktori sesudahnya).
+fpath  atau tpath akan di-encode ketika memiliki substring "Animeku_". Jika tidak, direktori tersebut akan di-decode.
+Pada fungsi fuse xmp_rename:
+```
+else if(isIAN(fpath) && !isIAN(tpath)){
+        printf("[Mendekode %s.]\n", fpath);
+        sistemLog(fpath, tpath, 2);
+        int itung = decodeIAN(fpath, 1000);
+        printf("[Total file yang terdekode: %d]\n", itung);
+}else if(!isIAN(fpath) && isIAN(tpath)){
+        printf("[Mengenkode %s.]\n", fpath);
+        sistemLog(fpath, tpath, 1);
+        int itung = encodeIAN(fpath, 1000);
+        printf("[Total file yang terenkode: %d]\n", itung);
+}
+```
+
+## 2c
+Apabila nama direktori dihilangkan “IAN_”, maka isi dari direktori tersebut akan terdecode berdasarkan nama aslinya.
+
+## Penyelesaian
+Sama seperti pada nomor 2b
+
+## 2d dan 2e
+Untuk memudahkan dalam memonitor kegiatan yang dilakukan pada filesystem yang telah dibuat, ia membuat log system pada direktori “/home/[user]/hayolongapain_[kelompok].log”. Dimana log ini akan menyimpan daftar perintah system call yang telah dijalankan pada filesystem.
+
+Karena Innu adalah seorang perfeksionis, ia membagi isi dari log systemnya menjadi 2 level, yaitu level INFO dan WARNING. Untuk log level WARNING, digunakan untuk mencatat syscall rmdir dan unlink. Sisanya, akan dicatat pada level INFO dengan format sebagai berikut : 
+
+## Penyelesaian
+Untuk menyelesaikan problem ini, kami membuat fungsi `logInfo` dan logWarning yang terintegrasi dengan fungsi `sistemLog` yang dapat mencatat aktivitas rename dari suatu direktori.
+
+```
+void sistemLog(char *dir1, char *dir2, int tipe) 
+{
+    char buff[1024], cmd[32];
+    if(dir1[0]!='\0') strcpy(cmd, "RENAME"), sprintf(buff, "%s --> %s", dir1, dir2), logRename(cmd, tipe, buff), logIngfo(cmd,buff);
+    else{
+        if(tipe == 3){ //mkdir
+            strcpy(cmd, "MKDIR"), sprintf(buff, "%s", dir2), logIngfo(cmd, buff);
+        }else if(tipe == 4){ //rmdir
+            strcpy(cmd, "RMDIR"), sprintf(buff, "%s", dir2), logWarning(cmd, buff);
+        }else if(tipe == 5){ //unlink
+            strcpy(cmd, "UNLINK"), sprintf(buff, "%s", dir2), logWarning(cmd, buff);
+        }
+    } 
+    
+}
+```
+Fungsi `logIngfo`
+```
+void logRename(char *cmd, int tipe, char *des) 
+{
+    time_t t = time(NULL);
+    struct tm* lt = localtime(&t);
+    char waktu[30];
+    strftime(waktu, 30, "%d%m%Y-%H:%M:%S", lt);
+    char logNya[1100];
+    sprintf(logNya, "%s %s %s", cmd, tipe==1?"terenkripsi":"terdecode", des);
+    FILE *out = fopen(fileLog, "a");
+    fprintf(out, "%s\n", logNya);
+    fclose(out);
+    return;
+}
+```
+Fungsi `logWarning`
+```
+void logWarning(char *cmd, char *des) 
+{
+    time_t t = time(NULL);
+    struct tm* lt = localtime(&t); 
+    char waktu[30];
+    strftime(waktu, 30, "%d%m%Y-%H:%M:%S", lt); 
+    char logNya[1100];
+    sprintf(logNya, "WARNING::%s:%s::%s", waktu, cmd, des); 
+    FILE *out = fopen(fileLogHayo, "a");
+    fprintf(out, "%s\n", logNya);
+    fclose(out);
+}
+```
