@@ -163,10 +163,21 @@ double pow (double x, double y){
 }
 // ganti nama dir spesial (uppercase + tambah extension biner)
 void renameExt(const char *path, char *res){
-  if(strcmp(res, ".") == 0 || strcmp(res, "..") == 0 || strstr(res, "/") == NULL)return;	
+  if(strcmp(res, ".") == 0 || strcmp(res, "..") == 0)return;	
 
   char fileName[1024];
-  strcpy(fileName,res);
+	
+// copy res ke fileName
+  int y = strlen(res)-1,z = 0;
+  printf("%s",res);
+  while(res[y]!='/' && y>=0)y--;
+  for(int y; y<strlen(res);y++){
+  	fileName[z]=res[y];
+	  z++;
+  }
+  fileName[z]='\0';
+	
+	
   // find extension
   int lastDot = -1;
   for(int i = 0; i < strlen(fileName); i++)if(fileName[i] == '.')lastDot = i;
@@ -220,14 +231,20 @@ void renameExt(const char *path, char *res){
   strcat(newSpecial,theExt);
   strcat(newSpecial,dotz);
   strcat(newSpecial,stringFromInt);
-  strcpy(res,newSpecial);
+  res = newSpecial;
 }
 // decode nama dir spesial (uppercase + tambah extension biner ke default)
 void decodeExt(const char *path, char *res){
   if(strcmp(res, ".") == 0 || strcmp(res, "..") == 0 || strstr(res, "/") == NULL)return;
 	
   char fileName[1024];
-  strcpy(fileName,res);
+  int y = strlen(res)-1,z = 0;
+  while(res[y]!='/' && y>=0)y--;
+  for(int y; y<strlen(res);y++){
+  	fileName[z]=res[y];
+	  z++;
+  }
+  fileName[z]='\0';
 	
   // find decimal ext
   int lastDot = -1;
@@ -238,7 +255,6 @@ void decodeExt(const char *path, char *res){
   int dec = 0;
   for(int i = lastDot + 1; i<strlen(fileName); i++)dec = dec * 10 + (fileName[i] - '0');
   
-  printf("this is decimal: %d\n",dec);
   //get decimal->bin
   char bintemp[1024], bin[1024];
   int binIter = 0, iter = 0;
@@ -253,10 +269,6 @@ void decodeExt(const char *path, char *res){
       bin[iter] = bintemp[i];
       iter++;
   }
-  
-  
-  for(int i=0;i<strlen(bin);i++)printf("%c",bin[i]);
-  printf("\n");
   
   //decode
   for(int i = 0; i<strlen(bin); i++){
