@@ -224,16 +224,16 @@ soal 1a,1b,1d, dan 1e
 
 Fuse berjalan
 
-![Encode sesuai soal](https://imgur.com/a/JTtdqJ9.jpg)
+![Encode sesuai soal](/uploads/8ed73e50b5a95ff28c482d33e62cef5d/Screenshot_from_2022-05-15_17-05-12.png)
 
 Encode sesuai soal
 
-![Ketika file direname, maka terdecode otomatis](https://imgur.com/a/PG7QeYf.jpg)
+![Ketika file direname, maka terdecode otomatis](/uploads/bba1a750dadbd6d89c31fcfaeae99ab6/Screenshot_from_2022-05-15_17-08-30.png)
 
 Ketika file direname, maka terdecode otomatis
 
 soal 1d
 
-![hasil log](https://imgur.com/a/JCLBPJc.jpg)
+![hasil log](/uploads/70adc3a045b1e955741591cde0db294b/Screenshot_from_2022-05-15_17-18-33.png)
 
 hasil log
