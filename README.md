@@ -216,3 +216,24 @@ void logging1(const char* kind, const char* old, char* new) {
 ```
 
 fungsi tersebut diletakan pada fungsi encode dan decode untuk mencatat setiap kali encode atau decode terjadi.
+
+#### screenshot
+soal 1a,1b,1d, dan 1e
+
+![Screenshot_from_2022-05-15_17-04-19](/uploads/-/system/user/10956064/a876dcad05fe88cefa13af4ebd047464/Screenshot_from_2022-05-15_17-04-19.png)
+
+Fuse berjalan
+
+![Screenshot_from_2022-05-15_17-05-12](/uploads/-/system/user/10956064/1f4c936a6eab4773c35dbeb9199c3b33/Screenshot_from_2022-05-15_17-05-12.png)
+
+Encode sesuai soal
+
+![Screenshot_from_2022-05-15_17-08-30](/uploads/-/system/user/10956064/553bfc5fa0de7c57ce0fd950f02fdbd5/Screenshot_from_2022-05-15_17-08-30.png)
+
+Ketika file direname, maka terdecode otomatis
+
+soal 1d
+
+![Screenshot_from_2022-05-15_17-18-33](/uploads/-/system/user/10956064/c382c548496275a043a1d47f1d3f4a29/Screenshot_from_2022-05-15_17-18-33.png)
+
+hasil log
