@@ -359,3 +359,186 @@ void logWarning(char *cmd, char *des)
     fclose(out);
 }
 ```
+
+## soal no 3
+Ishaq adalah seseorang yang terkenal di kalangan anak informatika seluruh indonesia. Ia memiliki teman yang bernama innu dan anya, lalu ishaq bertemu dengan mereka dan melihat program yang mereka berdua kerjakan  sehingga ia tidak mau kalah dengan innu untuk membantu anya dengan menambah fitur yang ada pada programnya dengan ketentuan :<br>
+A. Jika suatu direktori dibuat dengan awalan “nam_do-saq_”, maka direktori tersebut akan menjadi sebuah direktori spesial<br>
+B. Jika suatu direktori di-rename dengan memberi awalan “nam_do-saq_”,maka direktori tersebut akan menjadi sebuah direktori spesial.<br>
+C. Apabila direktori yang terenkripsi di-rename dengan menghapus “nam_do-saq_” pada bagian awal nama folder maka direktori tersebut menjadi direktori normal.<br>
+D. Direktori spesial adalah direktori yang mengembalikan enkripsi/encoding pada direktori “Animeku_” maupun “IAN_” namun masing masing aturan mereka tetap berjalan pada direktori di dalamnya (sifat recursive “Animeku_” dan “IAN_” tetap berjalan pada subdirektori).<br>
+E. Pada direktori spesial semua nama file (tidak termasuk ekstensi) pada fuse akan berubah menjadi uppercase insensitive dan diberi ekstensi baru berupa nilai desimal dari biner perbedaan namanya.
+Contoh : jika pada direktori asli namanya adalah “isHaQ_KEreN.txt” maka pada fuse akan 
+menjadi “ISHAQ_KEREN.txt.1670”. 1670 berasal dari biner 11010000110<br>
+### Fungsi tambahan
+Soal No. 3 akan menggunakan fungsi tambahan toString yang mengubah integer ke string dan pow sehingga tidak perlu compile dengan math.h
+```
+// fungsi int->string
+void toString(int x){
+	int len = 0;
+	len++;
+	int temp = x;
+	while(temp>10){
+	    temp /= 10;
+	    len++;
+	}
+	temp = len;
+	// fodder
+	for(int i=0; i<len; i++)stringFromInt[i] = 'a';
+	while(temp--){
+	    if(x)stringFromInt[temp] = '0' + (x%10);
+	    else stringFromInt[temp] = '0' + x;
+	    x/=10;
+	}
+	stringFromInt[len] = '\0';
+}
+double pow (double x, double y){
+	double ret = 1;
+	for(int i = 0 ; i < y ; i++) ret *= x;
+	return ret;
+}
+```
+### 3A.
+Pada soal ini akan dibuat fungsi cek yang akan mengembalikan nilai true jika file diawali "nam_do-saq_"
+```
+bool checkSp(const char *path){
+  char fileName[1024];
+  strcpy(fileName,path);
+  int fileNameLen = strlen(fileName);
+  if(fileNameLen >= 11){
+    char checkNDS[1024];
+    for(int i = 0; i < 11; i++)checkNDS[i] = fileName[i];
+    checkNDS[11] = '\0';
+    if(strcmp(checkNDS, "nam_do-saq_")==0)return true;
+  }
+  return false;
+}
+```
+### 3B & 3C
+3B dan 3C akan menggunakan fungsi checkSp seperti 3A
+
+### 3D
+Dalam menyelesaikan 3D akan menggunakan gabungan nomor 3A, 3B, 3C, dan 3E. Fungsi encode, decode, dan cek directory spesial akan digunakan pada fungsi xmp_, sehingga sistem dapat membedakan direktori spesial dan dapat melakukan operasi
+
+### 3E
+```
+// ganti nama dir spesial (uppercase + tambah extension biner)
+void renameExt(const char *path, char *res){
+  if(strcmp(res, ".") == 0 || strcmp(res, "..") == 0)return;	
+
+  char fileName[1024];
+	
+// copy res ke fileName
+  int y = strlen(res)-1,z = 0;
+  printf("%s",res);
+  while(res[y]!='/' && y>=0)y--;
+  for(int y; y<strlen(res);y++){
+  	fileName[z]=res[y];
+	  z++;
+  }
+  fileName[z]='\0';
+	
+	
+  // find extension
+  int lastDot = -1;
+  for(int i = 0; i < strlen(fileName); i++)if(fileName[i] == '.')lastDot = i;
+  
+  char noExt[1024], theExt[1024];
+  strcpy(newSpecial,"");
+  strcpy(noExt,"");
+  strcpy(theExt,"");
+  
+  // no extension
+  if(lastDot == -1)lastDot = strlen(fileName);
+  
+  // split
+  for(int i = 0; i < lastDot; i++)noExt[i] = fileName[i];
+  noExt[lastDot] = '\0';
+  
+  if(lastDot != strlen(fileName)){
+    int ctr = 0;
+    for(int i = lastDot; i < strlen(fileName); i++){
+      theExt[ctr] = fileName[i];
+      ctr++;
+    }
+    theExt[ctr]='\0';
+  }
+  
+  char upperCased[1024];
+  strcpy(upperCased,"");
+  
+  for(int i = 0; i < strlen(noExt); i++){
+    if(noExt[i] >= 'a' && noExt[i] <= 'z') {
+         upperCased[i] = noExt[i] -32;
+    }
+    else upperCased[i] = noExt[i];
+  }
+  upperCased[strlen(noExt)] = '\0';
+  
+  int diff = 0, multi = 0;
+  
+  for(int i = strlen(upperCased)-1; i >= 0; i--){
+    if(noExt[i]!=upperCased[i])diff += pow(2, multi);
+    multi++;
+  }
+  
+  toString(diff);
+  
+  char dotz[2];
+  dotz[0]='.';
+  dotz[1]='\0';
+  
+  strcpy(newSpecial,upperCased);
+  strcat(newSpecial,theExt);
+  strcat(newSpecial,dotz);
+  strcat(newSpecial,stringFromInt);
+  res = newSpecial;
+}
+// decode nama dir spesial (uppercase + tambah extension biner ke default)
+void decodeExt(const char *path, char *res){
+  if(strcmp(res, ".") == 0 || strcmp(res, "..") == 0 || strstr(res, "/") == NULL)return;
+	
+  char fileName[1024];
+  int y = strlen(res)-1,z = 0;
+  while(res[y]!='/' && y>=0)y--;
+  for(int y; y<strlen(res);y++){
+  	fileName[z]=res[y];
+	  z++;
+  }
+  fileName[z]='\0';
+	
+  // find decimal ext
+  int lastDot = -1;
+
+  for(int i = 0; i < strlen(fileName); i++)if(fileName[i] == '.')lastDot = i;
+  
+  //get str->decimal
+  int dec = 0;
+  for(int i = lastDot + 1; i<strlen(fileName); i++)dec = dec * 10 + (fileName[i] - '0');
+  
+  //get decimal->bin
+  char bintemp[1024], bin[1024];
+  int binIter = 0, iter = 0;
+  while(dec > 0){
+    bintemp[binIter] = '0' + dec%2;
+    dec/=2;
+    binIter++;
+  }
+  bintemp[binIter]='\0';
+  strcpy(bin,bintemp);
+  for(int i = strlen(bintemp)-1; i>=0; i--){
+      bin[iter] = bintemp[i];
+      iter++;
+  }
+  
+  //decode
+  for(int i = 0; i<strlen(bin); i++){
+    if(bin[i]=='1')decodedSpecial[i] = fileName[i] + 32;
+    else decodedSpecial[i] = fileName[i];
+  } 
+  //copy extension
+  if(strlen(bin))decodedSpecial[strlen(bin)] = '.';
+  for(int i = strlen(bin) + 1; i<lastDot; i++)decodedSpecial[i] = fileName[i];
+  decodedSpecial[lastDot] = '\0';
+}
+```
+Penyelesaian 3E dilakukan dengan cara membuat fungsi encode yaitu renameExt yang akan mengembalikan hasil nama file yang telah terenkripsi dengan format uppercase dan perbedaan biner sebagai ekstensi di belakang, sedangkan fungsi decodeExt digunakan mengembalikan hasil enkripsi sehingga file dapat dideteksi oleh sistem
