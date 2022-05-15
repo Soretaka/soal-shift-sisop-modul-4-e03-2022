@@ -12,11 +12,14 @@ a. Semua direktori dengan awalan “Animeku_” akan terencode dengan ketentuan 
     “Animeku_/anya_FORGER.txt” → “Animeku_/naln_ULITVI.txt”
 
 b. Semua direktori di-rename dengan awalan “Animeku_”, maka direktori tersebut akan menjadi direktori ter-encode dengan ketentuan sama dengan 1a.
+
 c. Apabila direktori yang terenkripsi di-rename menjadi tidak ter-encode, maka isi direktori tersebut akan terdecode.
+
 d. Setiap data yang terencode akan masuk dalam file “Wibu.log” 
 Contoh isi: 
 RENAME terenkripsi /home/[USER]/Downloads/hai --> /home/[USER]/Downloads/Animeku_hebat 
 RENAME terdecode /home/[USER]/Downloads/Animeku_ --> /home/[USER]/Downloads/Coba
+
 e. Metode encode pada suatu direktori juga berlaku terhadap direktori yang ada di dalamnya.(rekursif)
 Note : filesystem berfungsi normal layaknya linux pada umumnya, Mount source (root) filesystem adalah directory /home/[USER]/Documents, dalam penamaan file ‘/’ diabaikan, dan ekstensi tidak perlu di-encode
 
