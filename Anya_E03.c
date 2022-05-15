@@ -17,6 +17,7 @@
 
 static const char *WibuLogPath = "/home/kali/Documents/Wibu.log";
 static const char *directoryPath = "/home/kali/Downloads";
+static const char *fileLogHayo = "/home/kali/hayolongapain_E03.log";
 char prefix[8] = "Animeku_";
 
 void logging1(const char* kind, const char* old, char* new) {
@@ -279,97 +280,308 @@ void decodeExt(const char *path, char *res){
   for(int i = strlen(bin) + 1; i<lastDot; i++)decodedSpecial[i] = fileName[i];
   decodedSpecial[lastDot] = '\0';
 }
-// //---------------------------------------------------------//
-// //------------------------soal 2---------------------------//
-// void find_dir (char* path) { 
-//       DIR *dp; 
-//       struct dirent *ep; 
-//       dp = opendir(path); 
-//       if (dp != NULL) { 
-//           while ((ep = readdir (dp))) { puts (ep->d_name);} 
-//           (void) closedir (dp); 
-//       } 
-//       else perror ("Couldn't open the directory"); 
-// }
-// //C[i] = (p[i] + k[i mod klength] ) mod N, C = cipher, k = secret key (word), p = sentence or plainText or word, N = number of letters in the alphabet
-// void vigenereCipher(char* plainText){
-//     char* k = "INNUGANTENG";
-// 	char plainText[256];
-// 	int i;
-// 	char cipher;
-// 	int cipherValue;
-// 	int len = strlen(k);
-	
-// 	//Loop through the length of the plain text string
-// 	for(i=0; i<strlen(plainText); i++){
-		
-// 		//if the character is lowercase, where range is [97 -122]
-// 		if(islower(plainText[i]))
-// 		{
-// 			cipherValue = ( (int)plainText[i]-97 + (int)tolower(k[i % len])-97 ) % 26 +97;
-// 			cipher = (char)cipherValue;
-// 		}
-// 		else // Else it's upper case, where letter range is [65 - 90]
-// 		{
-// 			cipherValue = ( (int)plainText[i]-65 + (int)toupper(k[i % len])-65 ) % 26 +65;
-// 			cipher = (char)cipherValue;
-// 		}
-		
-// 		//Print the ciphered character if it is alphanumeric (a letter)
-// 		if(isalpha(plainText[i]))
-// 		{
-// 			printf("%c", cipher);
-// 		}
-// 		else //if the character is not a letter then print the character (e.g. space)
-// 		{
-// 			printf("%c", plainText[i]);
-// 		}
-// 	}
-// }
-// void create_txt(char* filename){
-// FILE *fptr;
-// fptr = fopen(directory, "r");
-// if (filename[0] == 'I' && filename[1] == 'A' && filename[2] == 'N' && filename[3] == '_') {
-//         char* temp;
-//         strcpy(temp,filename);
-//         vigenereChiper(temp);
-//         DIR *dp; 
-//       struct dirent *ep; 
-//       dp = opendir(path); 
-//       if (dp != NULL) { 
-//           while ((ep = readdir (dp))) { puts (ep->d_name);} 
-//           (void) closedir (dp); 
-//       } 
-//       else perror ("Couldn't open the directory"); 
-// }
-// }
+bool isIAN(const char *path) 
+{
+    for(int i=0;i<strlen(path)-4+1;i++)
+        if(path[i] == 'I' && path[i+1] == 'A' && path[i+2] == 'N' && path[i+3] == '_') return 1;
+    return 0;
+}
 
-//        fclose(fptr);
-//        }
+void encodeVig(char *s) 
+{
+    char key[] = "INNUGANTENG";
+    for (int i=0;s[i];i++)
+        if('A' <= s[i] && s[i] <= 'Z') s[i] = ((s[i]-'A'+(key[i%((sizeof(key)-1))]-'A'))%26)+'A';
+        else if('a' <= s[i] && s[i] <= 'z') s[i] = ((s[i]-'a'+(key[i%((sizeof(key)-1))]-'A'))%26)+'a';
+}
 
-// int rename(const char * oldname, const char * newname);
+void decodeVig(char *s) 
+{
+    char key[] = "INNUGANTENG";
+    for(int i=0;s[i];i++)
+        if('A' <= s[i] && s[i] <= 'Z') s[i] = ((s[i]-'A'-(key[i%((sizeof(key)-1))]-'A')+26)%26)+'A';
+        else if ('a' <= s[i] && s[i] <= 'z') s[i] = ((s[i]-'a'-(key[i%((sizeof(key)-1))]-'A')+26)%26)+'a';
+}
 
-// void rename_encode(char* old, char* new) {
-//       char* temp1 = "modul4/";
-//       char* temp2 = "modul4/";
-//       strcpy(temp1,old);
-//       strcpy(temp2, new);
-//       int rename(old, new);
-//       if (rename == 0 && old[0] == 'I' && old[1] == 'A' && old[2] == 'N') {
-//           // Encode Directory
-//           vigenereChiper(old);
+void logIngfo(char *cmd, char *des) 
+{
+    time_t t = time(NULL);
+    struct tm* lt = localtime(&t);
+    char waktu[30];
+    strftime(waktu, 30, "%d%m%Y-%H:%M:%S", lt);
+    char logNya[1100];
+    sprintf(logNya, "INFO::%s:%s::%s", waktu, cmd, des);
+    FILE *out = fopen(fileLogHayo, "a");
+    fprintf(out, "%s\n", logNya);
+    fclose(out);
+    return;
+}
 
-// }
+void logRename(char *cmd, int tipe, char *des) 
+{
+    time_t t = time(NULL);
+    struct tm* lt = localtime(&t);
+    char waktu[30];
+    strftime(waktu, 30, "%d%m%Y-%H:%M:%S", lt);
+    char logNya[1100];
+    sprintf(logNya, "%s %s %s", cmd, tipe==1?"terenkripsi":"terdecode", des);
+    FILE *out = fopen(WibuLogPath, "a");
+    fprintf(out, "%s\n", logNya);
+    fclose(out);
+    return;
+}
 
-// //soal 2
+void logWarning(char *cmd, char *des) 
+{
+    time_t t = time(NULL);
+    struct tm* lt = localtime(&t); 
+    char waktu[30];
+    strftime(waktu, 30, "%d%m%Y-%H:%M:%S", lt); 
+    char logNya[1100];
+    sprintf(logNya, "WARNING::%s:%s::%s", waktu, cmd, des); 
+    FILE *out = fopen(fileLogHayo, "a");
+    fprintf(out, "%s\n", logNya);
+    fclose(out);
+}
+
+void sistemLog(char *dir1, char *dir2, int tipe) 
+{
+    char buff[1024], cmd[32];
+    if(dir1[0]!='\0') strcpy(cmd, "RENAME"), sprintf(buff, "%s --> %s", dir1, dir2), logRename(cmd, tipe, buff), logIngfo(cmd,buff);
+    else{
+        if(tipe == 3){ //mkdir
+            strcpy(cmd, "MKDIR"), sprintf(buff, "%s", dir2), logIngfo(cmd, buff);
+        }else if(tipe == 4){ //rmdir
+            strcpy(cmd, "RMDIR"), sprintf(buff, "%s", dir2), logWarning(cmd, buff);
+        }else if(tipe == 5){ //unlink
+            strcpy(cmd, "UNLINK"), sprintf(buff, "%s", dir2), logWarning(cmd, buff);
+        }
+    } 
+    
+}
+
+void detailFileNya(const char *namaFileLengkap, char *nama, char *ekstensi) 
+{
+    int id=0, i=0;
+    while(namaFileLengkap[i]) 
+    {
+        if(namaFileLengkap[i] == '.') break;
+        nama[id++] = namaFileLengkap[i++];
+    }
+    nama[id] = '\0';
+    id = 0;
+    while(namaFileLengkap[i]) ekstensi[id++] = namaFileLengkap[i++];
+    ekstensi[id] = '\0';
+}
+
+int encodeFolder(const char *basePath, const char* folderName) 
+{
+    char encryptedName[512];
+    strcpy(encryptedName, folderName);
+    encodeAtRot(encryptedName);
+    char f_path[1024], t_path[1024];
+    sprintf(f_path, "%s/%s", basePath, folderName);
+    sprintf(t_path, "%s/%s", basePath, encryptedName);
+    int res = rename(f_path, t_path);
+    if (res == -1) return -errno;
+    return 0;
+}
+
+// encodode IAN
+int encodeFolderIAN(const char *basePath, const char* folderName) 
+{
+    char encryptedName[512];
+    strcpy(encryptedName, folderName);
+    encodeVig(encryptedName);
+    char f_path[1024], t_path[1024];
+    sprintf(f_path, "%s/%s", basePath, folderName);
+    sprintf(t_path, "%s/%s", basePath, encryptedName);
+    int res = rename(f_path, t_path);
+    if (res == -1) return -errno;
+    return 0;
+}
+
+int decodeFolder(const char *basePath, const char* folderName) 
+{
+    char decryptedName[512];
+    strcpy(decryptedName, folderName);
+    decodeAtRot(decryptedName);
+    char f_path[1024], t_path[1024];
+    sprintf(f_path, "%s/%s", basePath, folderName);
+    sprintf(t_path, "%s/%s", basePath, decryptedName);
+    int res = rename(f_path, t_path);
+    if (res == -1) return -errno;
+    return 0;
+}
+
+// decodeIAN
+int decodeFolderIAN(const char *basePath, const char* folderName) 
+{
+    char decryptedName[512];
+    strcpy(decryptedName, folderName);
+    decodeVig(decryptedName);
+    char f_path[1024], t_path[1024];
+    sprintf(f_path, "%s/%s", basePath, folderName);
+    sprintf(t_path, "%s/%s", basePath, decryptedName);
+    int res = rename(f_path, t_path);
+    if (res == -1) return -errno;
+    return 0;
+}
+
+int encodeFile(char *basePath, char *name) 
+{
+    char fileName[512], ext[64];
+    detailFileNya(name, fileName, ext);
+    encodeAtRot(fileName);
+    char f_path[1024], t_path[1024];
+    sprintf(f_path, "%s/%s", basePath, name);
+    sprintf(t_path, "%s/%s%s", basePath, fileName, ext);
+    int res = rename(f_path, t_path);
+    if (res == -1) return -errno;
+    return 0;
+}
+
+// encode IAN
+int encodeFileIAN(char *basePath, char *name) 
+{
+    char fileName[512], ext[64];
+    detailFileNya(name, fileName, ext);
+    encodeVig(fileName);
+    char f_path[1024], t_path[1024];
+    sprintf(f_path, "%s/%s", basePath, name);
+    sprintf(t_path, "%s/%s%s", basePath, fileName, ext);
+    int res = rename(f_path, t_path);
+    if (res == -1) return -errno;
+    return 0;
+}
+
+int decodeFile(char *basePath, char *name) 
+{
+    char fileName[1024], ext[64];
+    detailFileNya(name, fileName, ext);
+    decodeAtRot(fileName);
+    char f_path[1024], t_path[1100];
+    sprintf(f_path, "%s/%s", basePath, name);
+    sprintf(t_path, "%s/%s%s", basePath, fileName, ext);
+    int res = rename(f_path, t_path);
+    if (res == -1) return -errno;
+    return 0;
+}
+
+// decode IAN
+int decodeFileIAN(char *basePath, char *name) 
+{
+    char fileName[1024], ext[64];
+    detailFileNya(name, fileName, ext);
+    decodeVig(fileName);
+    char f_path[1024], t_path[1100];
+    sprintf(f_path, "%s/%s", basePath, name);
+    sprintf(t_path, "%s/%s%s", basePath, fileName, ext);
+    int res = rename(f_path, t_path);
+    if (res == -1) return -errno;
+    return 0;
+}
+
+int encodeFolderRekursif(char *basePath, int depth) 
+{
+    char path[1000]; 
+    struct dirent *dp; 
+    DIR *dir = opendir(basePath);
+    if (!dir) return 0;
+    int itung=0;
+    while((dp=readdir(dir)) != NULL) 
+    {
+        if (strcmp(dp->d_name, ".") == 0 || strcmp(dp->d_name, "..") == 0) continue;
+        strcpy(path, basePath); strcat(path, "/"); strcat(path, dp->d_name);
+        struct stat path_stat;
+        stat(path, &path_stat);
+        if(!S_ISREG(path_stat.st_mode)&&depth>0)
+            itung += encodeRekursif(path, depth - 1),
+            encodeFolder(basePath, dp->d_name);
+        else if(encodeFile(basePath, dp->d_name) == 0) itung++;
+    }
+    closedir(dir);
+    return itung;
+}
+
+// rekursif IAN
+int encodeRekursifIAN(char *basePath, int depth) 
+{
+    char path[1000]; 
+    struct dirent *dp; 
+    DIR *dir = opendir(basePath);
+    if (!dir) return 0;
+    int itung=0;
+    while((dp=readdir(dir)) != NULL) 
+    {
+        if (strcmp(dp->d_name, ".") == 0 || strcmp(dp->d_name, "..") == 0) continue;
+        strcpy(path, basePath); strcat(path, "/"); strcat(path, dp->d_name);
+        struct stat path_stat;
+        stat(path, &path_stat);
+        if(!S_ISREG(path_stat.st_mode)&&depth>0)
+            itung += encoderRekursifIAN(path, depth - 1),
+            encodeFolderIAN(basePath, dp->d_name);
+        else if(encodeFileIAN(basePath, dp->d_name) == 0) itung++;
+    }
+    closedir(dir);
+    return itung;
+}
+
+int decodeFolderRekursif(char *basePath, int depth) 
+{
+    char path[1000];
+    struct dirent *dp;
+    DIR *dir = opendir(basePath);
+    if(!dir) return 0;
+    int itung = 0;
+    while((dp = readdir(dir)) != NULL) 
+    {
+        if (strcmp(dp->d_name, ".") == 0 || strcmp(dp->d_name, "..") == 0) continue;
+        strcpy(path, basePath); strcat(path, "/"); strcat(path, dp->d_name);
+        struct stat path_stat;
+        stat(path, &path_stat);
+        if(!S_ISREG(path_stat.st_mode) && depth>0)
+            itung += decodeRekursif(path, depth - 1),
+            decodeFolder(basePath, dp->d_name);
+        else if(decodeFile(basePath, dp->d_name) == 0) itung++;
+    }
+    closedir(dir);
+    return itung;
+}
+
+//rekursif IAN
+int decodeRekursifIAN(char *basePath, int depth) 
+{
+    char path[1000];
+    struct dirent *dp;
+    DIR *dir = opendir(basePath);
+    if(!dir) return 0;
+    int itung = 0;
+    while((dp = readdir(dir)) != NULL) 
+    {
+        if (strcmp(dp->d_name, ".") == 0 || strcmp(dp->d_name, "..") == 0) continue;
+        strcpy(path, basePath); strcat(path, "/"); strcat(path, dp->d_name);
+        struct stat path_stat;
+        stat(path, &path_stat);
+        if(!S_ISREG(path_stat.st_mode) && depth>0)
+            itung += decodeRekursifIAN(path, depth - 1),
+            decodeFolderIAN(basePath, dp->d_name);
+        else if(decodeFileIAN(basePath, dp->d_name) == 0) itung++;
+    }
+    closedir(dir);
+    return itung;
+}
+
 //Get file attributes
 static  int  xmp_getattr(const char *path, struct stat *stbuf){
 	char * strToEnc1 = strstr(path, prefix);
-	
+	char * strToEnc3 = strstr(path,"nam_do-saq_");
 	if(strToEnc1 != NULL){
 		decode1(strToEnc1,path);
     }
-
+	if(strToEnc3 != NULL){
+		decodeExt(path,strToEnc3);
+	}
 	char newPath[1000];
 	int result;
 	sprintf(newPath,"%s%s", directoryPath, path);
@@ -381,11 +593,13 @@ static  int  xmp_getattr(const char *path, struct stat *stbuf){
 //Read directory
 static int xmp_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset, struct fuse_file_info *fi){ 
 	char * strToEnc1 = strstr(path, prefix);
-    	char * strToEnc3 = strstr(path, "nam_do-saq");
+    char * strToEnc3 = strstr(path, "nam_do-saq_");
 	if(strToEnc1 != NULL) {
         decode1(strToEnc1,path);
     }
-
+	if(strToEnc3 != NULL){
+		decodeExt(path,strToEnc3);
+	}
 	char newPath[1000];
 	if(strcmp(path,"/") == 0){
 		path = directoryPath;
