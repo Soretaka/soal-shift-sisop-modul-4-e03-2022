@@ -168,7 +168,6 @@ void renameExt(const char *path, char *res){
 	
 // copy res ke fileName
   int y = strlen(res)-1,z = 0;
-  printf("%s",res);
   while(res[y]!='/' && y>=0)y--;
   for(int y; y<strlen(res);y++){
   	fileName[z]=res[y];
